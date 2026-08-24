@@ -1,0 +1,237 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import {
+  Megaphone,
+  Calendar,
+  Clock,
+  Pin,
+  AlertTriangle,
+  FileText,
+  PlusCircle,
+  Eye,
+  Trash2,
+  Edit,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+  Search,
+} from 'lucide-react';
+
+export const ManageAnnouncements = () => {
+  const { user, isAdmin, isFaculty } = useAuth();
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [statusTab, setStatusTab] = useState('all'); // 'all', 'published', 'draft', 'scheduled', 'expired'
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    fetchMyAnnouncements();
+  }, []);
+
+  const fetchMyAnnouncements = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const res = await api.get('/announcements/my-announcements');
+      if (res.data.success) {
+        setAnnouncements(res.data.announcements);
+      }
+    } catch (err) {
+      console.error('Failed to load my announcements:', err);
+      setError('Could not load your announcements.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredAnnouncements = announcements.filter((a) => {
+    const matchesStatus = statusTab === 'all' || a.status === statusTab;
+    const matchesSearch =
+      !search ||
+      a.title.toLowerCase().includes(search.toLowerCase()) ||
+      a.content.toLowerCase().includes(search.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  const getStatusBadge = (status) => {
+    if (status === 'published') {
+      return (
+        <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-extrabold uppercase">
+          Published
+        </span>
+      );
+    }
+    if (status === 'scheduled') {
+      return (
+        <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-[11px] font-extrabold uppercase">
+          Scheduled
+        </span>
+      );
+    }
+    if (status === 'draft') {
+      return (
+        <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-extrabold uppercase">
+          Draft
+        </span>
+      );
+    }
+    return (
+      <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-extrabold uppercase">
+        {status}
+      </span>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header Banner */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-800 text-xs font-bold mb-2">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Authoring Console</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            My Published Circulars
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Manage your authored campus circulars, view read receipts, schedule future notices, and edit drafts.
+          </p>
+        </div>
+
+        <Link
+          to="/announcements/create"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs sm:text-sm shadow-md transition-all shrink-0"
+        >
+          <PlusCircle className="w-4 h-4" />
+          <span>Draft New Notice</span>
+        </Link>
+      </div>
+
+      {/* Status Filter Tabs */}
+      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto pb-1 no-scrollbar">
+        {['all', 'published', 'scheduled', 'draft', 'expired'].map((st) => (
+          <button
+            key={st}
+            onClick={() => setStatusTab(st)}
+            className={`pb-3 px-4 text-xs font-bold capitalize transition-all border-b-2 whitespace-nowrap ${
+              statusTab === st
+                ? 'border-purple-700 text-purple-700'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
+            }`}
+          >
+            {st} (
+            {st === 'all'
+              ? announcements.length
+              : announcements.filter((a) => a.status === st).length}
+            )
+          </button>
+        ))}
+      </div>
+
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Filter by keyword..."
+          className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+
+      {error && (
+        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-28 bg-white rounded-2xl border border-slate-200 animate-pulse p-4"
+            ></div>
+          ))}
+        </div>
+      ) : filteredAnnouncements.length === 0 ? (
+        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-md mx-auto space-y-3">
+          <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
+            <Megaphone className="w-7 h-7" />
+          </div>
+          <h3 className="text-base font-bold text-slate-900">No Announcements in this View</h3>
+          <p className="text-xs text-slate-500">
+            You don't have any announcements under the '{statusTab}' status.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/announcements/create"
+              className="px-4 py-2 rounded-xl bg-purple-700 text-white font-bold text-xs"
+            >
+              Create New Notice
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredAnnouncements.map((item) => (
+            <div
+              key={item._id}
+              className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 hover:border-purple-200 transition-all space-y-3"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {getStatusBadge(item.status)}
+                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-bold uppercase">
+                      {item.category}
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-[10px] font-semibold">
+                      Audience: {item.audience} ({item.branch})
+                    </span>
+                  </div>
+
+                  <h3 className="text-base font-bold text-slate-900 leading-snug">{item.title}</h3>
+                  <p className="text-xs text-slate-500 line-clamp-1">{item.summary || item.content}</p>
+                </div>
+
+                <div className="flex flex-row sm:flex-col sm:items-end justify-between items-center gap-1.5 shrink-0 text-xs text-slate-400">
+                  <span className="font-semibold text-slate-700">
+                    {item.readCount || 0} Readers
+                  </span>
+                  <span className="text-[11px]">
+                    {item.status === 'scheduled' ? 'Scheduled for: ' : 'Published: '}
+                    {new Date(item.publishAt).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-[11px] text-slate-400">
+                  Priority: <strong className="uppercase text-slate-600">{item.priority}</strong>
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/announcements/${item._id}`}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-purple-700 hover:text-purple-800"
+                  >
+                    <span>View Circular</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ManageAnnouncements;
