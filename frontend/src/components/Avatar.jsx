@@ -24,7 +24,7 @@ export const Avatar = ({
   size = 'sm',
   className = '',
   shape = 'circle', // 'circle' (rounded-full) or 'rounded' (rounded-2xl)
-  bgClass = 'bg-blue-600 text-white',
+  bgClass = 'bg-slate-900 text-white dark:bg-white dark:text-black',
   alt = '',
   onClick,
 }) => {

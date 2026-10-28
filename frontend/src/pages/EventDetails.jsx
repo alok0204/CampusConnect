@@ -9,16 +9,12 @@ import {
   Calendar,
   Clock,
   MapPin,
-  Users,
-  ShieldCheck,
   CheckCircle2,
   XCircle,
   AlertCircle,
   ArrowLeft,
   Trash2,
   Ban,
-  Building,
-  Sparkles,
   Share2,
   AlertTriangle,
   Maximize2,
@@ -52,7 +48,7 @@ export const EventDetails = () => {
       setLoading(true);
       setError('');
       const res = await api.get(`/events/${id}`);
-      if (res.data.success) {
+      if (res.data?.success) {
         setEvent(res.data.event);
       }
     } catch (err) {
@@ -70,7 +66,7 @@ export const EventDetails = () => {
     try {
       setActionLoading(true);
       const res = await api.put(`/events/${id}/approve`);
-      if (res.data.success) {
+      if (res.data?.success) {
         setActionMsg('Event approved successfully! It is now live in the campus feed.');
         setEvent(res.data.event);
       }
@@ -86,7 +82,7 @@ export const EventDetails = () => {
     try {
       setActionLoading(true);
       const res = await api.put(`/events/${id}/reject`, { rejectionReason });
-      if (res.data.success) {
+      if (res.data?.success) {
         setShowRejectModal(false);
         setActionMsg('Event rejected. Rejection reason recorded.');
         setEvent(res.data.event);
@@ -103,7 +99,7 @@ export const EventDetails = () => {
     try {
       setActionLoading(true);
       const res = await api.put(`/events/${id}/cancel`);
-      if (res.data.success) {
+      if (res.data?.success) {
         setActionMsg('Event has been cancelled.');
         setEvent(res.data.event);
       }
@@ -118,7 +114,7 @@ export const EventDetails = () => {
     try {
       setActionLoading(true);
       const res = await api.delete(`/events/${id}`);
-      if (res.data.success) {
+      if (res.data?.success) {
         navigate('/events');
       }
     } catch (err) {
@@ -132,24 +128,24 @@ export const EventDetails = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error || !event) {
     return (
-      <div className="max-w-xl mx-auto bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
-          <AlertCircle className="w-7 h-7" />
+      <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-3 shadow-card">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Event Unavailable</h2>
-        <p className="text-xs text-slate-500">{error || 'This event could not be found.'}</p>
+        <h2 className="text-base font-bold text-slate-900 dark:text-white">Event Unavailable</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{error || 'This event could not be found.'}</p>
         <Link
           to="/events"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs hover:bg-blue-700"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-semibold text-xs hover:bg-slate-800"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Events Feed</span>
         </Link>
       </div>
@@ -174,28 +170,28 @@ export const EventDetails = () => {
     switch (status) {
       case 'approved':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Approved & Live</span>
           </span>
         );
       case 'pending':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 text-xs font-semibold">
             <Clock className="w-3.5 h-3.5" />
-            <span>Pending Review</span>
+            <span>Pending Moderation</span>
           </span>
         );
       case 'rejected':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-800 text-xs font-bold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-xs font-semibold">
             <XCircle className="w-3.5 h-3.5" />
             <span>Rejected</span>
           </span>
         );
       case 'cancelled':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-200 text-slate-700 text-xs font-bold uppercase tracking-wider">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
             <Ban className="w-3.5 h-3.5" />
             <span>Cancelled</span>
           </span>
@@ -207,216 +203,220 @@ export const EventDetails = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Top Breadcrumbs */}
+      {/* Top Header Navigation */}
       <div className="flex items-center justify-between">
         <Link
           to="/events"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Events Feed</span>
         </Link>
-        <div className="flex items-center gap-2">{getStatusBadge(event.status)}</div>
+        <div>{getStatusBadge(event.status)}</div>
       </div>
 
       {actionMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 text-emerald-800 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 text-xs font-medium flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{actionMsg}</span>
         </div>
       )}
 
-      {/* Rejection Notice Banner (if event is rejected) */}
       {event.status === 'rejected' && (
-        <div className="p-5 rounded-2xl bg-red-50 border border-red-200 space-y-2">
-          <div className="flex items-center gap-2 text-red-800 font-bold text-sm">
-            <AlertTriangle className="w-5 h-5 text-red-600" />
+        <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 space-y-1.5">
+          <div className="flex items-center gap-2 text-rose-800 dark:text-rose-200 font-bold text-xs">
+            <AlertTriangle className="w-4 h-4 text-rose-600" />
             <span>Administrator Rejection Notice</span>
           </div>
-          <p className="text-xs text-red-700 leading-relaxed pl-7">
+          <p className="text-xs text-rose-700 dark:text-rose-300 pl-6">
             <strong>Reason:</strong> {event.rejectionReason || 'No specific reason provided.'}
           </p>
         </div>
       )}
 
-      {/* Main Details Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Large Hero Poster */}
-        <div
-          className="h-64 sm:h-96 relative bg-slate-900 overflow-hidden cursor-zoom-in group"
-          onClick={() => {
-            if (event.image) setShowImageModal(true);
-          }}
-          title="Click to view full image"
-        >
-          <img
-            src={getImageUrl(event.image)}
-            alt={event.title}
-            className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+      {/* Main Event Card */}
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-card overflow-hidden">
+        {event.image ? (
+          <div
+            className="h-64 sm:h-80 relative bg-slate-900 overflow-hidden cursor-zoom-in group"
+            onClick={() => setShowImageModal(true)}
+            title="Click to view full image"
+          >
+            <img
+              src={getImageUrl(event.image)}
+              alt={event.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-          {/* Badges on poster */}
-          <div className="absolute top-4 left-4 flex items-center gap-2">
-            <span className="px-3 py-1 rounded-xl bg-blue-600/90 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider shadow-sm">
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+              <span className="px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold uppercase">
+                {event.category}
+              </span>
+              {event.branch && event.branch !== 'ALL' && (
+                <span className="px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold">
+                  {event.branch} Dept Only
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowImageModal(true);
+              }}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md transition-all shadow-sm flex items-center gap-1.5 text-xs font-semibold"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Zoom Poster</span>
+            </button>
+
+            <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
+              <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                {event.organizer}
+              </span>
+              <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
+                {event.title}
+              </h1>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 space-y-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold uppercase">
               {event.category}
             </span>
-            {event.branch && event.branch !== 'ALL' && (
-              <span className="px-3 py-1 rounded-xl bg-purple-600/90 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider shadow-sm">
-                {event.branch} Branch
-              </span>
-            )}
-          </div>
-
-          {/* Full-screen zoom button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowImageModal(true);
-            }}
-            className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md transition-all shadow-sm flex items-center gap-1.5 text-xs font-bold"
-            title="View image full screen"
-          >
-            <Maximize2 className="w-4 h-4" />
-            <span className="hidden sm:inline">View Image</span>
-          </button>
-
-          <div className="absolute bottom-6 left-6 right-6 text-white space-y-1 pointer-events-none">
-            <span className="text-xs font-bold text-blue-300 uppercase tracking-wider">
-              {event.organizer}
-            </span>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {event.title}
             </h1>
           </div>
-        </div>
+        )}
 
-        {/* Content Body */}
-        <div className="p-6 sm:p-8 space-y-8">
-          {/* Metadata Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-6 border-b border-slate-100">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-blue-100 text-blue-700 shrink-0">
-                <Calendar className="w-5 h-5" />
+        <div className="p-6 sm:p-8 space-y-6">
+          {/* Metadata Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 shrink-0">
+                <Calendar className="w-4 h-4" />
               </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
                   Date
                 </span>
-                <p className="text-sm font-bold text-slate-800">{formatDate(event.date)}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  {formatDate(event.date)}
+                </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3">
-              <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-700 shrink-0">
-                <Clock className="w-5 h-5" />
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+                <Clock className="w-4 h-4" />
               </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                  Time Schedule
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
+                  Time
                 </span>
-                <p className="text-sm font-bold text-slate-800">
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
                   {event.startTime} - {event.endTime}
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex items-start gap-3 sm:col-span-2 lg:col-span-1">
-              <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700 shrink-0">
-                <MapPin className="w-5 h-5" />
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex items-start gap-3">
+              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+                <MapPin className="w-4 h-4" />
               </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                  Venue / Location
+              <div className="min-w-0">
+                <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
+                  Venue
                 </span>
-                <p className="text-sm font-bold text-slate-800 truncate">{event.venue}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  {event.venue}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Description Section */}
-          <div className="space-y-3">
-            <h2 className="text-lg font-bold text-slate-900">About This Event</h2>
-            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+          {/* Description */}
+          <div className="space-y-2">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">About This Event</h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
               {event.description}
             </p>
           </div>
 
-          {/* Organizer & Submitter Details */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Organizer Card */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Avatar user={event.creator} size="lg" className="shadow-sm" />
+              <Avatar user={event.creator} size="md" className="rounded-xl shadow-subtle" />
               <div>
-                <p className="text-sm font-bold text-slate-900">{event.creator?.name}</p>
-                <p className="text-xs text-slate-500">
-                  Submitted by {event.creator?.role?.toLowerCase()} ({event.creator?.branch || event.creator?.department || 'Central'})
+                <p className="text-xs font-bold text-slate-900 dark:text-white">
+                  {event.creator?.name || event.organizer}
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Organizer • {event.creator?.role || 'Campus'} (
+                  {event.creator?.branch || event.creator?.department || 'Department'})
                 </p>
               </div>
             </div>
 
-            <div className="text-xs text-slate-500">
+            <div className="text-[11px] text-slate-500 dark:text-slate-400">
               Target Audience:{' '}
-              <strong className="text-slate-800">
-                {event.branch === 'ALL' ? 'Open to All Branches' : `${event.branch} Department Only`}
+              <strong className="text-slate-800 dark:text-slate-200">
+                {event.branch === 'ALL' ? 'Open to All' : `${event.branch} Department`}
               </strong>
             </div>
           </div>
 
-          {/* Contextual Action Buttons */}
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  alert('Event link copied to clipboard!');
-                }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                <span>Share</span>
-              </button>
-            </div>
+          {/* Action Toolbar */}
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Event link copied to clipboard!');
+              }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Share Link</span>
+            </button>
 
-            {/* Admin & Creator Actions */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* Admin Actions */}
+            <div className="flex flex-wrap items-center gap-2">
               {isAdmin && event.status === 'pending' && (
                 <>
                   <button
                     onClick={() => setShowRejectModal(true)}
                     disabled={actionLoading}
-                    className="px-4 py-2 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 font-bold text-xs transition-colors"
+                    className="px-3.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 hover:bg-rose-100 font-semibold text-xs transition-colors"
                   >
                     Reject Submission
                   </button>
                   <button
                     onClick={handleApprove}
                     disabled={actionLoading}
-                    className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors"
+                    className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-semibold text-xs shadow-subtle transition-colors"
                   >
                     Approve Event
                   </button>
                 </>
               )}
 
-              {/* Cancel event (Admin or Creator for approved events) */}
               {(isAdmin || isCreator) && event.status === 'approved' && (
                 <button
                   onClick={handleCancel}
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-colors"
+                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-xs transition-colors"
                 >
                   Cancel Event
                 </button>
               )}
 
-              {/* Delete event */}
               {(isAdmin || isCreator) && (
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl text-red-600 hover:bg-red-50 font-bold text-xs transition-colors flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-semibold text-xs transition-colors flex items-center gap-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete</span>
@@ -429,33 +429,33 @@ export const EventDetails = () => {
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
-            <h3 className="text-lg font-bold text-slate-900">Reject Event Submission</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Please enter a constructive reason for rejection. This reason will be visible to the student/faculty creator in their submissions dashboard.
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-dropdown border border-slate-200 dark:border-slate-800 space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Reject Event Submission</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Provide a clear reason for the creator regarding why this event cannot be approved.
             </p>
             <form onSubmit={handleReject} className="space-y-4">
               <textarea
                 rows={3}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="e.g. Venue is already booked during this time, or missing faculty supervisor authorization."
+                placeholder="Reason for rejection..."
                 required
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-red-500 focus:bg-white"
-              ></textarea>
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white"
+              />
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowRejectModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                  className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
                 >
                   Confirm Rejection
                 </button>
@@ -467,20 +467,20 @@ export const EventDetails = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
-              <Trash2 className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-dropdown border border-slate-200 dark:border-slate-800 space-y-3 text-center">
+            <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Delete This Event?</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              This action cannot be undone. All event details and attendee records will be permanently removed.
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Delete This Event?</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              This action cannot be reversed. All details will be permanently removed.
             </p>
-            <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex items-center justify-center gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100"
               >
                 Cancel
               </button>
@@ -488,7 +488,7 @@ export const EventDetails = () => {
                 type="button"
                 onClick={handleDelete}
                 disabled={actionLoading}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
               >
                 Yes, Delete
               </button>
@@ -497,7 +497,7 @@ export const EventDetails = () => {
         </div>
       )}
 
-      {/* Full-screen Image Viewer Lightbox Modal */}
+      {/* Image Modal */}
       <ImageViewerModal
         isOpen={showImageModal}
         imageUrl={getImageUrl(event?.image)}

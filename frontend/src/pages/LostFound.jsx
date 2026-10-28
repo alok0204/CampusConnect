@@ -12,16 +12,10 @@ import {
   Calendar,
   Clock,
   PlusCircle,
-  Sparkles,
   ArrowRight,
-  Filter,
   CheckCircle2,
   AlertCircle,
-  Tag,
-  HelpCircle,
-  Layers,
   X,
-  ShieldCheck,
   Maximize2,
 } from 'lucide-react';
 
@@ -33,8 +27,7 @@ export const LostFound = () => {
   const [error, setError] = useState('');
   const [previewImage, setPreviewImage] = useState(null);
 
-  // Filter & Search states
-  const [typeFilter, setTypeFilter] = useState('ALL'); // 'ALL', 'lost', 'found'
+  const [typeFilter, setTypeFilter] = useState('ALL'); // 'ALL' | 'lost' | 'found'
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [search, setSearch] = useState('');
@@ -73,8 +66,8 @@ export const LostFound = () => {
       if (sort) params.append('sort', sort);
 
       const res = await api.get(`/lost-found?${params.toString()}`);
-      if (res.data.success) {
-        setItems(res.data.items);
+      if (res.data?.success) {
+        setItems(res.data.items || []);
       }
     } catch (err) {
       console.error('Failed to load Lost & Found items:', err);
@@ -118,149 +111,145 @@ export const LostFound = () => {
   const getStatusBadge = (status, type) => {
     if (status === 'resolved' || status === 'claimed') {
       return (
-        <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+        <span className="px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
           <CheckCircle2 className="w-3 h-3" />
-          <span>{type === 'found' ? 'Claimed / Resolved' : 'Recovered'}</span>
+          <span>{type === 'found' ? 'Claimed' : 'Recovered'}</span>
         </span>
       );
     }
     if (status === 'claim_pending') {
       return (
-        <span className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm">
+        <span className="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
           <Clock className="w-3 h-3" />
           <span>Claim Pending</span>
         </span>
       );
     }
     return (
-      <span className="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-sm">
-        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
-        <span>Active Notice</span>
+      <span className="px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+        <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+        <span>Active</span>
       </span>
     );
   };
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 rounded-3xl p-6 sm:p-8 text-white shadow-lg shadow-amber-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Header Block */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-semibold backdrop-blur-sm mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-200" />
-            <span>Campus Lost & Found Hub</span>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Lost & Found Hub
+            </h1>
+            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {items.length}
+            </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Lost & Found Items
-          </h1>
-          <p className="text-amber-100 font-medium text-sm mt-1 max-w-xl">
-            Centralized portal to report lost student belongings, register recovered found items, and submit ownership verification claims.
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Report misplaced belongings or register items recovered on campus grounds.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/lost-found/my-reports"
-            className="px-4 py-2.5 rounded-xl bg-amber-500/30 text-white border border-white/20 font-bold text-xs sm:text-sm hover:bg-amber-500/40 backdrop-blur-sm transition-all"
+            className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs shadow-subtle transition-colors"
           >
             My Reports & Claims
           </Link>
           <Link
             to="/lost-found/create?type=lost"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-amber-800 font-bold text-xs sm:text-sm hover:bg-amber-50 transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-semibold text-xs shadow-subtle transition-colors"
           >
             <PlusCircle className="w-4 h-4" />
-            <span>Report Lost Item</span>
-          </Link>
-          <Link
-            to="/lost-found/create?type=found"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm hover:bg-emerald-700 transition-all shadow-sm"
-          >
-            <SearchCheck className="w-4 h-4" />
-            <span>Report Found Item</span>
+            <span>Report Item</span>
           </Link>
         </div>
       </div>
 
-      {/* Main Search & Filter Control Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 space-y-4">
-        {/* Type Toggle Pills: All vs Lost vs Found */}
-        <div className="flex items-center justify-between flex-wrap gap-3 pb-2 border-b border-slate-100">
-          <div className="flex items-center p-1 bg-slate-100 rounded-xl gap-1">
+      {/* Search & Filter Toolbar */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-card p-4 space-y-4">
+        {/* Type Segment Control: All vs Lost vs Found */}
+        <div className="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-xl gap-1">
             <button
               onClick={() => setTypeFilter('ALL')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 typeFilter === 'ALL'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-subtle font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               All Listings
             </button>
             <button
               onClick={() => setTypeFilter('lost')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 typeFilter === 'lost'
-                  ? 'bg-red-600 text-white shadow-sm'
-                  : 'text-red-700 hover:bg-red-50'
+                  ? 'bg-rose-600 text-white shadow-subtle font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-rose-600'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-red-400"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
               <span>Lost Items</span>
             </button>
             <button
               onClick={() => setTypeFilter('found')}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                 typeFilter === 'found'
-                  ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'text-emerald-700 hover:bg-emerald-50'
+                  ? 'bg-emerald-600 text-white shadow-subtle font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-emerald-600'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
               <span>Found Items</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <label className="text-xs text-slate-500 font-bold">Sort By:</label>
+          <div className="flex items-center gap-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Sort:
+            </label>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500"
+              className="px-2.5 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-800 dark:text-white"
             >
               <option value="newest">Recently Listed</option>
-              <option value="date_desc">Incident Date (Newest First)</option>
-              <option value="date_asc">Incident Date (Oldest First)</option>
+              <option value="date_desc">Incident Date (Newest)</option>
+              <option value="date_asc">Incident Date (Oldest)</option>
             </select>
           </div>
         </div>
 
-        {/* Search Query Inputs */}
+        {/* Search Inputs */}
         <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="relative sm:col-span-2">
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by item name, brand, color, description..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
+              placeholder="Search by title, brand, description..."
+              className="w-full pl-9 pr-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:border-brand-600 font-medium"
             />
           </div>
 
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <MapPin className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={locationSearch}
                 onChange={(e) => setLocationSearch(e.target.value)}
-                placeholder="Filter by location (e.g. Lab, Library)..."
-                className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all"
+                placeholder="Location (e.g. Library, Lab)"
+                className="w-full pl-8 pr-3 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400"
               />
             </div>
             <button
               type="submit"
-              className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm transition-colors shrink-0"
+              className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-semibold text-xs transition-colors shrink-0"
             >
               Search
             </button>
@@ -273,10 +262,10 @@ export const LostFound = () => {
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 categoryFilter === cat
-                  ? 'bg-amber-600 text-white shadow-sm'
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+                  ? 'bg-slate-900 text-white dark:bg-brand-600 dark:text-white shadow-subtle'
+                  : 'bg-slate-50 dark:bg-slate-800/40 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800'
               }`}
             >
               {cat === 'ALL' ? 'All Categories' : cat}
@@ -285,13 +274,13 @@ export const LostFound = () => {
         </div>
 
         {hasActiveFilters && (
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-            <span className="text-xs text-slate-500">
-              Showing filtered results ({items.length} listings)
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Showing {items.length} matching listings
             </span>
             <button
               onClick={clearFilters}
-              className="inline-flex items-center gap-1 text-xs font-bold text-red-600 hover:text-red-700"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:underline"
             >
               <X className="w-3.5 h-3.5" />
               <span>Reset Filters</span>
@@ -300,187 +289,149 @@ export const LostFound = () => {
         )}
       </div>
 
-      {/* Error state */}
       {error && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+        <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-medium">
           {error}
         </div>
       )}
 
-      {/* Loading state */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-2xl border border-slate-200 p-4 animate-pulse space-y-3"
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 animate-pulse space-y-3"
             >
-              <div className="h-44 bg-slate-200 rounded-xl"></div>
-              <div className="h-5 bg-slate-200 rounded w-3/4"></div>
-              <div className="h-4 bg-slate-200 rounded w-1/2"></div>
-              <div className="h-4 bg-slate-200 rounded w-full"></div>
+              <div className="h-40 bg-slate-100 dark:bg-slate-800 rounded-xl" />
+              <div className="h-4 bg-slate-100 dark:bg-slate-800 rounded w-3/4" />
+              <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/2" />
             </div>
           ))}
         </div>
       ) : items.length === 0 ? (
-        /* Empty State */
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-12 text-center max-w-lg mx-auto space-y-3">
-          <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
-            <SearchCheck className="w-8 h-8" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-card p-12 text-center max-w-sm mx-auto space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center mx-auto">
+            <SearchCheck className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">No Listings Found</h3>
-          <p className="text-xs text-slate-500 leading-relaxed">
+          <h3 className="text-sm font-bold text-slate-900 dark:text-white">No Listings Found</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             {hasActiveFilters
-              ? 'No lost or found items matched your search filters. Try adjusting your query or resetting filters.'
-              : 'There are currently no active lost or found reports. Report an item if you misplaced or recovered something on campus.'}
+              ? 'No items match your selected filters. Try widening your search.'
+              : 'There are currently no open lost or found notices.'}
           </p>
-          <div className="pt-3 flex items-center justify-center gap-3">
+          <div className="pt-2 flex items-center justify-center gap-2">
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200"
+                className="px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200"
               >
                 Clear Filters
               </button>
             )}
             <Link
               to="/lost-found/create?type=lost"
-              className="px-4 py-2 rounded-xl bg-amber-600 text-white text-xs font-bold hover:bg-amber-700 shadow-sm"
+              className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 text-white text-xs font-semibold shadow-subtle"
             >
-              Report Lost Item
+              Report Item
             </Link>
           </div>
         </div>
       ) : (
         /* Items Grid */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {items.map((item) => {
             const isLost = item.type === 'lost';
             return (
               <div
                 key={item._id}
                 onClick={() => navigate(`/lost-found/${item._id}`)}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md hover:border-amber-300 transition-all flex flex-col overflow-hidden group cursor-pointer"
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    navigate(`/lost-found/${item._id}`);
-                  }
-                }}
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-card hover:border-slate-300 dark:hover:border-slate-700 card-hover-lift flex flex-col overflow-hidden group cursor-pointer"
               >
-                {/* Item Image Banner */}
+                {/* Item Image */}
                 <div
-                  className="h-48 relative overflow-hidden bg-slate-100 group/img cursor-zoom-in"
+                  className="h-44 relative overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-zoom-in"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (item.image) {
                       setPreviewImage({ url: getImageUrl(item.image), title: item.title });
                     }
                   }}
-                  title="Click to view full image"
+                  title="Click to zoom image"
                 >
                   <img
                     src={getImageUrl(item.image)}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
 
-                  {/* Type Badge (LOST / FOUND) */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                  {/* Type Badge */}
+                  <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
                     <span
-                      className={`px-3 py-1 rounded-xl text-white text-[11px] font-extrabold uppercase tracking-wider shadow-sm backdrop-blur-md ${
-                        isLost ? 'bg-red-600/90' : 'bg-emerald-600/90'
+                      className={`px-2 py-0.5 rounded-md text-white text-[10px] font-extrabold uppercase tracking-wider backdrop-blur-md ${
+                        isLost ? 'bg-rose-600/90' : 'bg-emerald-600/90'
                       }`}
                     >
-                      {isLost ? 'LOST ITEM' : 'FOUND ITEM'}
+                      {isLost ? 'Lost' : 'Found'}
                     </span>
-                    <span className="px-2.5 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-semibold">
                       {item.category}
                     </span>
                   </div>
 
-                  {/* Status Overlay Badge */}
-                  <div
-                    className="absolute top-3 right-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
+                  {/* Status Overlay */}
+                  <div className="absolute top-2.5 right-2.5">
                     {getStatusBadge(item.status, item.type)}
                   </div>
 
-                  {/* Full-screen expand button on hover */}
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (item.image) {
-                        setPreviewImage({ url: getImageUrl(item.image), title: item.title });
-                      }
-                    }}
-                    className="absolute bottom-3 right-3 p-1.5 rounded-lg bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md opacity-0 group-hover/img:opacity-100 transition-opacity shadow-sm"
-                    title="View full screen"
-                    aria-label="View image full screen"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
-
-                  <div className="absolute bottom-3 left-3 right-12 text-white pointer-events-none">
-                    <p className="text-xs font-semibold text-amber-200 truncate flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 shrink-0" />
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white pointer-events-none">
+                    <p className="text-[11px] font-medium text-slate-200 truncate flex items-center gap-1">
+                      <MapPin className="w-3 h-3 text-slate-300 shrink-0" />
                       <span>{item.location}</span>
                     </p>
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-1.5">
-                    <h3 className="text-base font-bold text-slate-900 line-clamp-1 leading-snug group-hover:text-amber-700 transition-colors">
+                <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
                       {item.description}
                     </p>
                   </div>
 
-                  {/* Attributes & Metadata */}
-                  <div className="space-y-2 pt-3 border-t border-slate-100 text-xs text-slate-600">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="flex items-center gap-1.5 text-slate-500">
-                        <Calendar className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                        <span>Date: {formatDate(item.date)}</span>
+                  <div className="space-y-1.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-slate-400" />
+                        <span>{formatDate(item.date)}</span>
                       </span>
-                      {item.time && (
-                        <span className="text-slate-400">Time: {item.time}</span>
-                      )}
+                      {item.time && <span>{item.time}</span>}
                     </div>
 
                     {(item.brand || item.color) && (
-                      <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                      <div className="flex items-center gap-1.5 pt-0.5">
                         {item.brand && (
-                          <span className="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700">
-                            Brand: {item.brand}
+                          <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium">
+                            {item.brand}
                           </span>
                         )}
                         {item.color && (
-                          <span className="px-2 py-0.5 rounded bg-slate-100 font-semibold text-slate-700">
-                            Color: {item.color}
+                          <span className="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium">
+                            {item.color}
                           </span>
                         )}
                       </div>
                     )}
                   </div>
 
-                  {/* Card Footer */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <div
-                      className="flex items-center gap-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                       <Avatar user={item.creator} size="xs" />
-                      <span className="text-[11px] font-medium text-slate-500 truncate max-w-[110px]">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[100px]">
                         {item.creator?.name}
                       </span>
                     </div>
@@ -488,10 +439,10 @@ export const LostFound = () => {
                     <Link
                       to={`/lost-found/${item._id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 group-hover:translate-x-0.5 transition-transform"
+                      className="font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
                     >
-                      <span>{item.type === 'found' ? 'Claim / View' : 'View Notice'}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <span>{item.type === 'found' ? 'Claim / View' : 'Details'}</span>
+                      <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
                 </div>
@@ -501,7 +452,6 @@ export const LostFound = () => {
         </div>
       )}
 
-      {/* Full-screen Image Viewer Lightbox Modal */}
       <ImageViewerModal
         isOpen={!!previewImage}
         imageUrl={previewImage?.url}

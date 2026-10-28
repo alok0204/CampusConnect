@@ -83,15 +83,15 @@ export const AnnouncementDetails = () => {
 
   if (error || !announcement) {
     return (
-      <div className="max-w-xl mx-auto bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+      <div className="max-w-xl mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
           <AlertCircle className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Circular Unavailable</h2>
-        <p className="text-xs text-slate-500">{error || 'This circular could not be accessed.'}</p>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Circular Unavailable</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{error || 'This circular could not be accessed.'}</p>
         <Link
           to="/announcements"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-700 text-white font-bold text-xs hover:bg-purple-800"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs hover:bg-brand-700 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Announcements Feed</span>
@@ -143,7 +143,7 @@ export const AnnouncementDetails = () => {
       <div className="flex items-center justify-between">
         <Link
           to="/announcements"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to All Circulars</span>
@@ -151,18 +151,18 @@ export const AnnouncementDetails = () => {
 
         <div className="flex items-center gap-2">
           {announcement.isRead && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-100 dark:border-emerald-900/50">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Read</span>
             </span>
           )}
           <span
             className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
               isUrgent
-                ? 'bg-red-100 text-red-800'
+                ? 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900/50'
                 : isImportant
-                ? 'bg-amber-100 text-amber-900'
-                : 'bg-slate-100 text-slate-700'
+                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
             }`}
           >
             {announcement.priority}
@@ -171,15 +171,15 @@ export const AnnouncementDetails = () => {
       </div>
 
       {/* Main Official Letterhead Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         {/* Letterhead Header Banner */}
-        <div className="bg-slate-900 text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-4 border-purple-600">
+        <div className="bg-slate-900 dark:bg-slate-950 text-white p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-4 border-brand-600">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-purple-600 flex items-center justify-center text-white shadow-md shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0">
               <GraduationCap className="w-7 h-7" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-purple-300">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-brand-300">
                 Official Campus Circular
               </span>
               <h2 className="text-lg sm:text-xl font-black tracking-tight leading-none mt-0.5">
@@ -205,17 +205,17 @@ export const AnnouncementDetails = () => {
         {/* Circular Content Container */}
         <div className="p-6 sm:p-10 space-y-6">
           {/* Metadata Badges Row */}
-          <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-100">
-            <span className="px-3 py-1 rounded-xl bg-purple-100 text-purple-900 text-xs font-bold uppercase tracking-wider">
+          <div className="flex flex-wrap items-center gap-2 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <span className="px-3 py-1 rounded-xl bg-brand-100 dark:bg-brand-950/80 text-brand-900 dark:text-brand-300 text-xs font-bold uppercase tracking-wider">
               Category: {announcement.category}
             </span>
 
-            <span className="px-3 py-1 rounded-xl bg-blue-50 text-blue-700 text-xs font-semibold">
+            <span className="px-3 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-semibold border border-blue-100/60 dark:border-blue-900/40">
               Audience: {getAudienceDisplay(announcement)}
             </span>
 
             {announcement.expiresAt && (
-              <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-medium">
+              <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium">
                 Valid Until: {new Date(announcement.expiresAt).toLocaleDateString()}
               </span>
             )}
@@ -223,36 +223,36 @@ export const AnnouncementDetails = () => {
 
           {/* Title */}
           <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-tight">
               {announcement.title}
             </h1>
             {announcement.summary && (
-              <p className="text-sm text-slate-500 font-medium italic">
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium italic">
                 "{announcement.summary}"
               </p>
             )}
           </div>
 
           {/* Body Content */}
-          <div className="text-sm sm:text-base text-slate-700 leading-relaxed space-y-4 whitespace-pre-line font-normal pt-2">
+          <div className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed space-y-4 whitespace-pre-line font-normal pt-2">
             {announcement.content}
           </div>
 
           {/* Attachment Download Box */}
           {announcement.attachment?.url && (
-            <div className="p-5 rounded-2xl bg-purple-50/70 border border-purple-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6">
+            <div className="p-5 rounded-2xl bg-brand-50/70 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-6">
               <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-purple-600 text-white shrink-0">
+                <div className="p-3 rounded-xl bg-brand-600 text-white shrink-0 shadow-sm">
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-800 block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-800 dark:text-brand-300 block">
                     Official Document Attachment
                   </span>
-                  <p className="text-sm font-bold text-slate-900">
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
                     {announcement.attachment.name || 'Official_Circular.pdf'}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
                     Format: {announcement.attachment.fileType?.toUpperCase() || 'PDF'} •{' '}
                     {announcement.attachment.fileSize || 'Verified Campus Document'}
                   </p>
@@ -263,7 +263,7 @@ export const AnnouncementDetails = () => {
                 href={announcement.attachment.url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white font-bold text-xs shadow-sm transition-colors shrink-0"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-sm transition-colors shrink-0"
               >
                 <Download className="w-4 h-4" />
                 <span>Download / View Attachment</span>
@@ -272,22 +272,22 @@ export const AnnouncementDetails = () => {
           )}
 
           {/* Authority Signoff Block */}
-          <div className="pt-8 border-t border-slate-100 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-            <div className="text-xs text-slate-400 space-y-0.5">
+          <div className="pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+            <div className="text-xs text-slate-400 dark:text-slate-500 space-y-0.5">
               <p>Campus Connect Institutional Verification System</p>
               <p>This circular is an authenticated college communication.</p>
             </div>
 
             <div className="flex items-center gap-3">
-              <Avatar user={announcement.createdBy} size="lg" bgClass="bg-purple-700 text-white" className="shadow-sm" />
+              <Avatar user={announcement.createdBy} size="lg" bgClass="bg-brand-600 text-white" className="shadow-sm" />
               <div className="text-left space-y-0.5">
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
                   Issued By Authority
                 </p>
-                <p className="text-base font-extrabold text-slate-900 leading-tight">
+                <p className="text-base font-extrabold text-slate-900 dark:text-white leading-tight">
                   {announcement.createdBy?.name}
                 </p>
-                <p className="text-xs font-semibold text-purple-700">
+                <p className="text-xs font-semibold text-brand-600 dark:text-brand-400">
                   {announcement.createdBy?.role === 'ADMIN'
                     ? 'Office of the Campus Administrator'
                     : `Department of ${announcement.createdBy?.department || 'Academics'}`}
@@ -297,13 +297,13 @@ export const AnnouncementDetails = () => {
           </div>
 
           {/* Bottom Action Toolbar */}
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
             <button
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 alert('Circular link copied to clipboard!');
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
               <Share2 className="w-4 h-4" />
               <span>Share Circular</span>
@@ -314,7 +314,7 @@ export const AnnouncementDetails = () => {
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl text-red-600 hover:bg-red-50 text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-bold transition-colors flex items-center gap-1.5"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete Circular</span>
@@ -327,20 +327,20 @@ export const AnnouncementDetails = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-sm w-full p-6 shadow-xl space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
               <Trash2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Delete This Announcement?</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Delete This Announcement?</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
               This action will remove the circular from all student and department feeds immediately.
             </p>
             <div className="flex items-center justify-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 Cancel
               </button>
@@ -348,7 +348,7 @@ export const AnnouncementDetails = () => {
                 type="button"
                 onClick={handleDelete}
                 disabled={actionLoading}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-sm transition-colors"
               >
                 Yes, Delete
               </button>
