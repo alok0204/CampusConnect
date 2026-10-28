@@ -6,24 +6,15 @@ import ImageViewerModal from '../components/ImageViewerModal';
 import Avatar from '../components/Avatar';
 import { getImageUrl } from '../utils/imageUrl';
 import {
-  SearchCheck,
   MapPin,
   Calendar,
   Clock,
-  User,
   ShieldCheck,
   CheckCircle2,
-  XCircle,
   AlertCircle,
   ArrowLeft,
   Trash2,
-  Ban,
   Share2,
-  Tag,
-  AlertTriangle,
-  HelpCircle,
-  Send,
-  Sparkles,
   Phone,
   Mail,
   Maximize2,
@@ -37,14 +28,13 @@ export const LostFoundDetails = () => {
   const [item, setItem] = useState(null);
   const [userClaim, setUserClaim] = useState(null);
   const [claimsList, setClaimsList] = useState([]);
-  const [claimCounts, setClaimCounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionMsg, setActionMsg] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
 
-  // Claim submission modal
+  // Claim modal
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [claimForm, setClaimForm] = useState({
     reason: '',
@@ -69,12 +59,10 @@ export const LostFoundDetails = () => {
       setLoading(true);
       setError('');
       const res = await api.get(`/lost-found/${id}`);
-      if (res.data.success) {
+      if (res.data?.success) {
         setItem(res.data.item);
         setUserClaim(res.data.userClaim);
-        setClaimCounts(res.data.claimCounts);
 
-        // If current user is finder or admin, fetch claims list
         const isFinder =
           user &&
           res.data.item.creator &&
@@ -99,15 +87,14 @@ export const LostFoundDetails = () => {
   const fetchClaims = async () => {
     try {
       const res = await api.get(`/lost-found/${id}/claims`);
-      if (res.data.success) {
-        setClaimsList(res.data.claims);
+      if (res.data?.success) {
+        setClaimsList(res.data.claims || []);
       }
     } catch (err) {
       console.error('Failed to fetch claims:', err);
     }
   };
 
-  // Submit Claim
   const handleClaimSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -120,7 +107,7 @@ export const LostFoundDetails = () => {
     try {
       setActionLoading(true);
       const res = await api.post(`/lost-found/${id}/claim`, claimForm);
-      if (res.data.success) {
+      if (res.data?.success) {
         setShowClaimModal(false);
         setActionMsg('Claim submitted successfully! The finder will review your verification details.');
         fetchItemDetails();
@@ -132,7 +119,6 @@ export const LostFoundDetails = () => {
     }
   };
 
-  // Approve Claim
   const handleApproveClaim = async (claimId) => {
     if (!window.confirm('Are you sure you want to approve this claim and resolve this item?'))
       return;
@@ -142,7 +128,7 @@ export const LostFoundDetails = () => {
       const res = await api.put(`/lost-found/claims/${claimId}/approve`, {
         reviewNote: 'Item handed over and ownership verified.',
       });
-      if (res.data.success) {
+      if (res.data?.success) {
         setActionMsg('Claim approved! Item has been marked as resolved.');
         fetchItemDetails();
       }
@@ -153,7 +139,6 @@ export const LostFoundDetails = () => {
     }
   };
 
-  // Reject Claim
   const handleRejectClaim = async (e) => {
     e.preventDefault();
     if (!rejectingClaimId) return;
@@ -163,7 +148,7 @@ export const LostFoundDetails = () => {
       const res = await api.put(`/lost-found/claims/${rejectingClaimId}/reject`, {
         reviewNote,
       });
-      if (res.data.success) {
+      if (res.data?.success) {
         setRejectingClaimId(null);
         setReviewNote('');
         setActionMsg('Claim rejected.');
@@ -176,12 +161,11 @@ export const LostFoundDetails = () => {
     }
   };
 
-  // Close item
   const handleCloseReport = async (actionType) => {
     try {
       setActionLoading(true);
       const res = await api.put(`/lost-found/${id}/close`, { action: actionType });
-      if (res.data.success) {
+      if (res.data?.success) {
         setActionMsg(`Report marked as ${actionType}.`);
         fetchItemDetails();
       }
@@ -192,12 +176,11 @@ export const LostFoundDetails = () => {
     }
   };
 
-  // Delete item
   const handleDelete = async () => {
     try {
       setActionLoading(true);
       const res = await api.delete(`/lost-found/${id}`);
-      if (res.data.success) {
+      if (res.data?.success) {
         navigate('/lost-found');
       }
     } catch (err) {
@@ -211,25 +194,25 @@ export const LostFoundDetails = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="w-10 h-10 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error || !item) {
     return (
-      <div className="max-w-xl mx-auto bg-white rounded-3xl border border-slate-200 p-8 text-center space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
-          <AlertCircle className="w-7 h-7" />
+      <div className="max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 text-center space-y-3 shadow-card">
+        <div className="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mx-auto">
+          <AlertCircle className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Listing Unavailable</h2>
-        <p className="text-xs text-slate-500">{error || 'This report could not be found.'}</p>
+        <h2 className="text-base font-bold text-slate-900 dark:text-white">Listing Unavailable</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">{error || 'This report could not be found.'}</p>
         <Link
           to="/lost-found"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs hover:bg-amber-700"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 dark:bg-brand-600 text-white font-semibold text-xs hover:bg-slate-800"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Lost & Found Directory</span>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Lost & Found</span>
         </Link>
       </div>
     );
@@ -256,7 +239,7 @@ export const LostFoundDetails = () => {
       <div className="flex items-center justify-between">
         <Link
           to="/lost-found"
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Lost & Found</span>
@@ -264,23 +247,25 @@ export const LostFoundDetails = () => {
 
         <div className="flex items-center gap-2">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
-              isLost ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800'
+            className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
+              isLost
+                ? 'bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300'
+                : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300'
             }`}
           >
             {isLost ? 'Lost Item' : 'Found Item'}
           </span>
           <span
-            className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider ${
+            className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
               item.status === 'resolved' || item.status === 'claimed'
-                ? 'bg-emerald-100 text-emerald-800'
+                ? 'bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                 : item.status === 'claim_pending'
-                ? 'bg-amber-100 text-amber-800'
-                : 'bg-blue-100 text-blue-800'
+                ? 'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
             }`}
           >
             {item.status === 'resolved'
-              ? 'Resolved / Claimed'
+              ? 'Resolved'
               : item.status === 'claim_pending'
               ? 'Claim Pending'
               : 'Active'}
@@ -289,244 +274,236 @@ export const LostFoundDetails = () => {
       </div>
 
       {actionMsg && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 text-emerald-800 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 text-xs font-medium flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{actionMsg}</span>
         </div>
       )}
 
       {/* Main Details Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        {/* Hero Image */}
-        <div
-          className="h-64 sm:h-96 relative bg-slate-900 overflow-hidden cursor-zoom-in group"
-          onClick={() => {
-            if (item.image) setShowImageModal(true);
-          }}
-          title="Click to view full image"
-        >
-          <img
-            src={getImageUrl(item.image)}
-            alt={item.title}
-            className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-300"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-card overflow-hidden">
+        {item.image ? (
+          <div
+            className="h-64 sm:h-80 relative bg-slate-900 overflow-hidden cursor-zoom-in group"
+            onClick={() => setShowImageModal(true)}
+            title="Click to view full image"
+          >
+            <img
+              src={getImageUrl(item.image)}
+              alt={item.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-          <div className="absolute top-4 left-4 flex items-center gap-2">
-            <span className="px-3 py-1 rounded-xl bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold uppercase tracking-wider">
+            <div className="absolute top-4 left-4 flex items-center gap-2">
+              <span className="px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold uppercase">
+                {item.category}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowImageModal(true);
+              }}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md transition-all shadow-sm flex items-center gap-1.5 text-xs font-semibold"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Zoom Photo</span>
+            </button>
+
+            <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+                <MapPin className="w-3.5 h-3.5" />
+                <span>{item.location}</span>
+              </div>
+              <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight">
+                {item.title}
+              </h1>
+            </div>
+          </div>
+        ) : (
+          <div className="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 space-y-2">
+            <span className="px-2.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold uppercase">
               {item.category}
             </span>
-          </div>
-
-          {/* Full-screen zoom button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowImageModal(true);
-            }}
-            className="absolute top-4 right-4 p-2 rounded-xl bg-slate-900/60 hover:bg-slate-900 text-white backdrop-blur-md transition-all shadow-sm flex items-center gap-1.5 text-xs font-bold"
-            title="View image full screen"
-          >
-            <Maximize2 className="w-4 h-4" />
-            <span className="hidden sm:inline">View Image</span>
-          </button>
-
-          <div className="absolute bottom-6 left-6 right-6 text-white space-y-1 pointer-events-none">
-            <div className="flex items-center gap-2 text-amber-300 text-xs font-bold uppercase">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{item.location}</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               {item.title}
             </h1>
           </div>
-        </div>
+        )}
 
-        {/* Content Body */}
-        <div className="p-6 sm:p-8 space-y-8">
+        <div className="p-6 sm:p-8 space-y-6">
           {/* Metadata Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-6 border-b border-slate-100">
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
                 {isLost ? 'Date Lost' : 'Date Found'}
               </span>
-              <p className="text-sm font-bold text-slate-800">{formatDate(item.date)}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                {formatDate(item.date)}
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                Approximate Time
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
+                Time
               </span>
-              <p className="text-sm font-bold text-slate-800">{item.time || 'Not specified'}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                {item.time || 'Not specified'}
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                Brand / Manufacturer
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
+                Brand
               </span>
-              <p className="text-sm font-bold text-slate-800">{item.brand || 'N/A'}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                {item.brand || 'N/A'}
+              </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+              <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
                 Color
               </span>
-              <p className="text-sm font-bold text-slate-800">{item.color || 'N/A'}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                {item.color || 'N/A'}
+              </p>
             </div>
           </div>
 
-          {/* Description Section */}
-          <div className="space-y-3">
-            <h2 className="text-lg font-bold text-slate-900">Description & Details</h2>
-            <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+          <div className="space-y-2">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Description & Particulars</h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">
               {item.description}
             </p>
           </div>
 
-          {/* Private Unique Details (Visible ONLY to Creator or Admin) */}
           {(isCreator || isAdmin) && item.uniqueDetails && (
-            <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1.5">
-              <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
-                <ShieldCheck className="w-4 h-4 text-amber-700" />
+            <div className="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/40 space-y-1">
+              <div className="flex items-center gap-1.5 text-amber-900 dark:text-amber-200 font-bold text-xs">
+                <ShieldCheck className="w-4 h-4 text-amber-600" />
                 <span>Confidential Identifying Details (Private to You & Admin)</span>
               </div>
-              <p className="text-xs text-amber-800 leading-relaxed">{item.uniqueDetails}</p>
+              <p className="text-xs text-amber-800 dark:text-amber-300 pl-5">{item.uniqueDetails}</p>
             </div>
           )}
 
-          {/* Reporter / Finder Information Card */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Contact & Submitter Info */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Avatar user={item.creator} size="lg" bgClass="bg-amber-600 text-white" className="shadow-sm" />
+              <Avatar user={item.creator} size="md" className="rounded-xl shadow-subtle" />
               <div>
-                <p className="text-sm font-bold text-slate-900">{item.creator?.name}</p>
-                <p className="text-xs text-slate-500">
-                  Reported by {item.creator?.role?.toLowerCase()} (
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{item.creator?.name}</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Reported by {item.creator?.role || 'Campus'} (
                   {item.creator?.branch || item.creator?.department || 'Student'})
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-2 text-xs">
               {item.contactPreference === 'phone' && item.contactNumber && (
                 <a
                   href={`tel:${item.contactNumber}`}
-                  className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 flex items-center gap-1.5"
                 >
                   <Phone className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Call / WhatsApp</span>
+                  <span>Call / Phone</span>
                 </a>
               )}
               {item.contactPreference === 'email' && item.creator?.email && (
                 <a
                   href={`mailto:${item.creator.email}`}
-                  className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 flex items-center gap-1.5"
                 >
-                  <Mail className="w-3.5 h-3.5 text-blue-600" />
+                  <Mail className="w-3.5 h-3.5 text-brand-600" />
                   <span>Send Email</span>
                 </a>
               )}
             </div>
           </div>
 
-          {/* User's Claim Status Banner (if current user submitted a claim) */}
+          {/* User's Claim Status */}
           {userClaim && (
-            <div className="p-5 rounded-2xl bg-blue-50 border border-blue-200 space-y-2">
+            <div className="p-4 rounded-2xl bg-brand-50/50 dark:bg-brand-950/20 border border-brand-200 dark:border-brand-900 space-y-1.5">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-blue-900 font-bold text-sm">
-                  <ShieldCheck className="w-5 h-5 text-blue-600" />
-                  <span>Your Claim Status</span>
-                </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase ${
-                    userClaim.status === 'approved'
-                      ? 'bg-emerald-100 text-emerald-800'
-                      : userClaim.status === 'rejected'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-amber-100 text-amber-800'
-                  }`}
-                >
+                <span className="font-bold text-xs text-brand-950 dark:text-brand-100">
+                  Your Ownership Claim
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-brand-100 dark:bg-brand-950 text-brand-800 dark:text-brand-300">
                   {userClaim.status}
                 </span>
               </div>
-              <p className="text-xs text-blue-800">
-                <strong>Your Statement:</strong> {userClaim.reason}
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                <strong>Statement:</strong> {userClaim.reason}
               </p>
               {userClaim.reviewNote && (
-                <p className="text-xs text-slate-600 bg-white/70 p-2.5 rounded-xl border border-blue-100">
-                  <strong>Finder's Note:</strong> {userClaim.reviewNote}
+                <p className="text-xs text-slate-500 bg-white/70 dark:bg-slate-800 p-2 rounded-xl">
+                  <strong>Finder Note:</strong> {userClaim.reviewNote}
                 </p>
               )}
             </div>
           )}
 
-          {/* Review Incoming Claims Drawer (if current user IS finder or admin) */}
+          {/* Claims List for Finder / Admin */}
           {!isLost && (isCreator || isAdmin) && claimsList.length > 0 && (
-            <div className="space-y-4 pt-4 border-t border-slate-100">
+            <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center justify-between">
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span>Submitted Ownership Claims</span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Ownership Claims</span>
+                  <span className="px-2 py-0.2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px]">
                     {claimsList.length}
                   </span>
                 </h3>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 {claimsList.map((claim) => (
                   <div
                     key={claim._id}
-                    className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3"
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-2.5"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar user={claim.claimant} size="sm" className="shrink-0" />
+                      <div className="flex items-center gap-2.5">
+                        <Avatar user={claim.claimant} size="sm" />
                         <div>
-                          <p className="text-sm font-bold text-slate-900">
-                            {claim.claimant?.name} ({claim.claimant?.branch || 'Student'})
+                          <p className="text-xs font-bold text-slate-900 dark:text-white">
+                            {claim.claimant?.name}
                           </p>
-                          <p className="text-[11px] text-slate-400">
-                            Roll: {claim.claimant?.rollNumber || claim.claimant?.collegeId} •{' '}
-                            {claim.claimant?.email}
+                          <p className="text-[10px] text-slate-400">
+                            {claim.claimant?.collegeId} • {claim.claimant?.email}
                           </p>
                         </div>
                       </div>
 
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold uppercase ${
-                          claim.status === 'approved'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : claim.status === 'rejected'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
                         {claim.status}
                       </span>
                     </div>
 
-                    <div className="text-xs text-slate-700 space-y-1 bg-white p-3 rounded-xl border border-slate-100">
+                    <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
                       <p>
-                        <strong>Reason / Circumstances:</strong> {claim.reason}
+                        <strong>Reason:</strong> {claim.reason}
                       </p>
                       <p>
-                        <strong>Identifying Features / Marks:</strong>{' '}
-                        <span className="text-blue-900 font-semibold">{claim.identifyingDetails}</span>
+                        <strong>Identifying Proof:</strong>{' '}
+                        <span className="text-brand-600 dark:text-brand-400 font-semibold">{claim.identifyingDetails}</span>
                       </p>
                       {claim.previousLocation && (
                         <p>
-                          <strong>Last Known Location:</strong> {claim.previousLocation}
+                          <strong>Last Known Spot:</strong> {claim.previousLocation}
                         </p>
                       )}
                       {claim.contactNumber && (
                         <p>
-                          <strong>Contact Phone:</strong> {claim.contactNumber}
+                          <strong>Phone:</strong> {claim.contactNumber}
                         </p>
                       )}
                     </div>
 
-                    {/* Action buttons if claim is pending */}
                     {claim.status === 'pending' && (
                       <div className="flex items-center justify-end gap-2 pt-1">
                         <button
@@ -536,15 +513,15 @@ export const LostFoundDetails = () => {
                             setReviewNote('');
                           }}
                           disabled={actionLoading}
-                          className="px-3.5 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-xs font-bold transition-colors"
+                          className="px-3 py-1 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-semibold"
                         >
-                          Reject Claim
+                          Reject
                         </button>
                         <button
                           type="button"
                           onClick={() => handleApproveClaim(claim._id)}
                           disabled={actionLoading}
-                          className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition-colors"
+                          className="px-3.5 py-1 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 text-white text-xs font-semibold shadow-subtle"
                         >
                           Verify & Approve Claim
                         </button>
@@ -557,38 +534,36 @@ export const LostFoundDetails = () => {
           )}
 
           {/* Action Toolbar */}
-          <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
             <button
               onClick={() => {
                 navigator.clipboard.writeText(window.location.href);
                 alert('Listing link copied to clipboard!');
               }}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-bold hover:bg-slate-50 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-3.5 h-3.5" />
               <span>Share Notice</span>
             </button>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              {/* If it's a found item and user is NOT creator and not claimed yet */}
+            <div className="flex flex-wrap items-center gap-2">
               {!isLost && !isCreator && !userClaim && item.status !== 'resolved' && (
                 <button
                   onClick={() => setShowClaimModal(true)}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-200 flex items-center gap-2 transition-all"
+                  className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 text-white font-semibold text-xs shadow-subtle flex items-center gap-1.5"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   <span>This Is Mine (Submit Claim)</span>
                 </button>
               )}
 
-              {/* Creator actions */}
               {isCreator && item.status === 'active' && (
                 <button
                   onClick={() => handleCloseReport('resolved')}
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-xs transition-colors"
+                  className="px-3.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold text-xs"
                 >
-                  Mark as Resolved / Recovered
+                  Mark as Resolved
                 </button>
               )}
 
@@ -596,10 +571,10 @@ export const LostFoundDetails = () => {
                 <button
                   onClick={() => setShowDeleteModal(true)}
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl text-red-600 hover:bg-red-50 font-bold text-xs transition-colors flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-semibold text-xs flex items-center gap-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>Delete Report</span>
+                  <span>Delete</span>
                 </button>
               )}
             </div>
@@ -607,40 +582,35 @@ export const LostFoundDetails = () => {
         </div>
       </div>
 
-      {/* Claim Submission Modal */}
+      {/* Claim Modal */}
       {showClaimModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Claim Recovered Item</h3>
-                <p className="text-xs text-slate-500">
-                  Provide verifiable details to prove your ownership to the finder.
-                </p>
-              </div>
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-dropdown border border-slate-200 dark:border-slate-800 space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Claim Recovered Item</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Provide verifiable details to confirm your ownership with the finder.
+              </p>
             </div>
 
-            <form onSubmit={handleClaimSubmit} className="space-y-4 pt-2">
+            <form onSubmit={handleClaimSubmit} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Why do you believe this item is yours? *
+                <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                  Circumstances / Where you lost it *
                 </label>
                 <textarea
                   rows={2}
                   value={claimForm.reason}
                   onChange={(e) => setClaimForm({ ...claimForm, reason: e.target.value })}
-                  placeholder="e.g. I left my black case on the library 2nd floor desk yesterday afternoon."
+                  placeholder="e.g. Left it in Lab 2 on desk 4 around 3 PM"
                   required
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500"
-                ></textarea>
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white"
+                />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Specific Identifying Marks / Serial / Contents *
+                <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                  Specific Identifying Marks / Contents *
                 </label>
                 <textarea
                   rows={3}
@@ -648,54 +618,56 @@ export const LostFoundDetails = () => {
                   onChange={(e) =>
                     setClaimForm({ ...claimForm, identifyingDetails: e.target.value })
                   }
-                  placeholder="Provide details only the owner would know: e.g. wallpaper, specific stickers, scratched initials, specific contents inside..."
+                  placeholder="Provide stickers, initials, scratches, or interior contents only you know..."
                   required
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500"
-                ></textarea>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Last Known Location / Time
-                </label>
-                <input
-                  type="text"
-                  value={claimForm.previousLocation}
-                  onChange={(e) =>
-                    setClaimForm({ ...claimForm, previousLocation: e.target.value })
-                  }
-                  placeholder="e.g. Around 3 PM in Room 104"
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Your Phone / WhatsApp Number
-                </label>
-                <input
-                  type="tel"
-                  value={claimForm.contactNumber}
-                  onChange={(e) => setClaimForm({ ...claimForm, contactNumber: e.target.value })}
-                  placeholder="+91 9876543210"
-                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-emerald-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Last Known Location
+                  </label>
+                  <input
+                    type="text"
+                    value={claimForm.previousLocation}
+                    onChange={(e) =>
+                      setClaimForm({ ...claimForm, previousLocation: e.target.value })
+                    }
+                    placeholder="e.g. Near Canteen"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase text-slate-700 dark:text-slate-300 mb-1">
+                    Contact Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={claimForm.contactNumber}
+                    onChange={(e) => setClaimForm({ ...claimForm, contactNumber: e.target.value })}
+                    placeholder="+91 9876543210"
+                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowClaimModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-200"
+                  className="px-4 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 text-white font-semibold text-xs shadow-subtle"
                 >
-                  Submit Claim for Verification
+                  Submit Claim
                 </button>
               </div>
             </form>
@@ -705,32 +677,32 @@ export const LostFoundDetails = () => {
 
       {/* Reject Claim Modal */}
       {rejectingClaimId && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <h3 className="text-base font-bold text-slate-900">Reject Ownership Claim</h3>
-            <p className="text-xs text-slate-500">
-              Enter reason why the verification details did not match this item.
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-dropdown border border-slate-200 dark:border-slate-800 space-y-3">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Reject Claim</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              State why the verification details did not match.
             </p>
             <form onSubmit={handleRejectClaim} className="space-y-3">
               <textarea
                 rows={3}
                 value={reviewNote}
                 onChange={(e) => setReviewNote(e.target.value)}
-                placeholder="e.g. Details provided do not match the markings on this recovered item."
-                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-red-500"
-              ></textarea>
+                placeholder="Details provided do not match..."
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-900 dark:text-white"
+              />
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setRejectingClaimId(null)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={actionLoading}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                  className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
                 >
                   Confirm Rejection
                 </button>
@@ -742,20 +714,20 @@ export const LostFoundDetails = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto">
-              <Trash2 className="w-6 h-6" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-6 shadow-dropdown border border-slate-200 dark:border-slate-800 space-y-3 text-center">
+            <div className="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">Delete This Report?</h3>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              This action cannot be undone. All report listings and associated claim records will be removed.
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Delete Report?</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              This action cannot be undone. Listing and claims will be permanently removed.
             </p>
-            <div className="flex items-center justify-center gap-3 pt-2">
+            <div className="flex items-center justify-center gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100"
               >
                 Cancel
               </button>
@@ -763,7 +735,7 @@ export const LostFoundDetails = () => {
                 type="button"
                 onClick={handleDelete}
                 disabled={actionLoading}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs"
+                className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs"
               >
                 Yes, Delete
               </button>
@@ -771,7 +743,7 @@ export const LostFoundDetails = () => {
           </div>
         </div>
       )}
-      {/* Full-screen Image Viewer Lightbox Modal */}
+
       <ImageViewerModal
         isOpen={showImageModal}
         imageUrl={getImageUrl(item?.image)}

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { GraduationCap, AlertCircle, ArrowRight, User, Mail, Hash, BookOpen, Lock, Building } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { GraduationCap, AlertCircle, ArrowRight, User, Mail, Hash, BookOpen, Lock, Sun, Moon } from 'lucide-react';
 
 export const StudentSignup = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export const StudentSignup = () => {
   const [loading, setLoading] = useState(false);
 
   const { registerStudent } = useAuth();
+  const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const branches = ['CSE', 'ECE', 'ME', 'CE', 'IT', 'EE', 'AIDS'];
@@ -59,35 +61,46 @@ export const StudentSignup = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-10 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-slate-100 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 relative transition-colors">
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
+        <button
+          type="button"
+          onClick={toggleTheme}
+          className="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white shadow-subtle transition-colors"
+          title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-label="Toggle theme"
+        >
+          {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+        </button>
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-xl text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-200 mb-3">
-          <GraduationCap className="w-7 h-7" />
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-900 text-white dark:bg-brand-600 shadow-card mb-3">
+          <GraduationCap className="w-6 h-6" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
           Student Registration
-        </h2>
-        <p className="mt-1 text-sm text-slate-500 font-medium">
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
           Create your verified Campus Connect student account
         </p>
       </div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-xl px-4 sm:px-0">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-sm border border-slate-200 rounded-2xl">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-xl">
+        <div className="bg-white dark:bg-slate-900 py-8 px-6 sm:px-10 shadow-card border border-slate-200 dark:border-slate-800 rounded-3xl">
           {error && (
-            <div className="mb-5 p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3 text-red-700 text-sm font-medium">
-              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <div className="mb-4 p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs font-medium">
+              <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Full Name */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                 Full Name *
               </label>
-              <div className="relative rounded-xl">
+              <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <User className="w-4 h-4" />
                 </div>
@@ -98,18 +111,17 @@ export const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="e.g. Anshul Sharma"
                   required
-                  className="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 />
               </div>
             </div>
 
-            {/* Email & College ID */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   College Email *
                 </label>
-                <div className="relative rounded-xl">
+                <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Mail className="w-4 h-4" />
                   </div>
@@ -120,16 +132,16 @@ export const StudentSignup = () => {
                     onChange={handleChange}
                     placeholder="name.branch@campus.edu"
                     required
-                    className="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                    className="block w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   College ID / UID *
                 </label>
-                <div className="relative rounded-xl">
+                <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Hash className="w-4 h-4" />
                   </div>
@@ -140,16 +152,15 @@ export const StudentSignup = () => {
                     onChange={handleChange}
                     placeholder="e.g. 22CSE042"
                     required
-                    className="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                    className="block w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Roll Number & Branch */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   Roll Number
                 </label>
                 <input
@@ -158,22 +169,22 @@ export const StudentSignup = () => {
                   value={formData.rollNumber}
                   onChange={handleChange}
                   placeholder="22CSE042"
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   Branch *
                 </label>
                 <select
                   name="branch"
                   value={formData.branch}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 >
                   {branches.map((b) => (
-                    <option key={b} value={b}>
+                    <option key={b} value={b} className="dark:bg-slate-900 text-slate-900 dark:text-white">
                       {b}
                     </option>
                   ))}
@@ -181,17 +192,17 @@ export const StudentSignup = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   Year *
                 </label>
                 <select
                   name="year"
                   value={formData.year}
                   onChange={handleChange}
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 >
                   {years.map((y) => (
-                    <option key={y} value={y}>
+                    <option key={y} value={y} className="dark:bg-slate-900 text-slate-900 dark:text-white">
                       {y}
                     </option>
                   ))}
@@ -199,19 +210,18 @@ export const StudentSignup = () => {
               </div>
             </div>
 
-            {/* Section */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                 Section *
               </label>
-              <div className="flex gap-3">
+              <div className="grid grid-cols-4 gap-2">
                 {sections.map((sec) => (
                   <label
                     key={sec}
-                    className={`flex-1 flex items-center justify-center py-2 border rounded-xl cursor-pointer text-sm font-bold transition-all ${
+                    className={`flex items-center justify-center py-2 border rounded-xl cursor-pointer text-xs font-bold transition-all ${
                       formData.section === sec
-                        ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm'
-                        : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                        ? 'bg-slate-900 text-white dark:bg-brand-600 dark:text-white border-transparent shadow-subtle'
+                        : 'border-slate-200 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     <input
@@ -222,16 +232,15 @@ export const StudentSignup = () => {
                       onChange={handleChange}
                       className="sr-only"
                     />
-                    <span>Section {sec}</span>
+                    <span>Sec {sec}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {/* Password & Confirm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   Password *
                 </label>
                 <input
@@ -241,12 +250,12 @@ export const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="At least 6 chars"
                   required
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1">
                   Confirm Password *
                 </label>
                 <input
@@ -256,7 +265,7 @@ export const StudentSignup = () => {
                   onChange={handleChange}
                   placeholder="Repeat password"
                   required
-                  className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-medium"
+                  className="block w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:border-brand-600 focus:bg-white dark:focus:bg-slate-800 transition-all font-medium"
                 />
               </div>
             </div>
@@ -264,10 +273,10 @@ export const StudentSignup = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-all shadow-md shadow-blue-100 disabled:opacity-70 text-sm"
+              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-white bg-slate-900 hover:bg-slate-800 dark:bg-brand-600 dark:hover:bg-brand-500 transition-colors shadow-subtle disabled:opacity-70 text-xs sm:text-sm"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <span>Create Student Account</span>
@@ -277,10 +286,10 @@ export const StudentSignup = () => {
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Already have an account?</span>
-            <Link to="/login" className="font-bold text-blue-600 hover:underline">
-              Sign In here
+          <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Already registered?</span>
+            <Link to="/login" className="font-bold text-brand-600 dark:text-brand-400 hover:underline">
+              Sign In to Portal
             </Link>
           </div>
         </div>
