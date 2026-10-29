@@ -26,6 +26,14 @@ export const errorHandler = (err, req, res, next) => {
     return res.status(400).json({ success: false, message });
   }
 
+  // CORS policy rejection
+  if (err.message && err.message.includes('CORS policy')) {
+    return res.status(403).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
   res.status(error.statusCode || 500).json({
     success: false,
     message: error.message || 'Internal Server Error',

@@ -5,7 +5,10 @@ const BASE_URL = 'http://localhost:5000/api';
 const loginUser = async (identifier, password) => {
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-bypass-rate-limit': 'test-suite',
+    },
     body: JSON.stringify({ identifier, password }),
   });
   const data = await res.json();
