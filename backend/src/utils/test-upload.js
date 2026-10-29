@@ -17,7 +17,10 @@ async function runUploadTests() {
     console.log('🔹 [1/6] Authenticating Student...');
     const loginRes = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-bypass-rate-limit': 'test-suite',
+      },
       body: JSON.stringify({ identifier: 'anshul.cse@campus.edu', password: 'Student@123' }),
     });
     const loginData = await loginRes.json();
@@ -58,9 +61,13 @@ async function runUploadTests() {
     console.log(`  ✅ Image uploaded successfully: ${uploadedImageUrl}`);
     console.log(`  ✅ Safe unique filename generated: ${uploadData.file?.filename}`);
 
-    // 3. Test Static Serving of Uploaded Image
-    console.log('\n🔹 [3/6] Testing Static File Serving (/uploads/images/...)...');
-    const staticRes = await fetch(`http://localhost:5000${uploadedImageUrl}`);
+    // 3. Test Static Serving / Fetching of Uploaded Image
+    console.log('\n🔹 [3/6] Testing Fetching / Serving of Uploaded Image...');
+    const imageFetchUrl =
+      uploadedImageUrl.startsWith('http://') || uploadedImageUrl.startsWith('https://')
+        ? uploadedImageUrl
+        : `http://localhost:5000${uploadedImageUrl}`;
+    const staticRes = await fetch(imageFetchUrl);
     if (staticRes.status !== 200) {
       throw new Error(`Static file serving failed with status ${staticRes.status}`);
     }

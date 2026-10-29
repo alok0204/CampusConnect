@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { autoSeedIfEmpty } from './utils/seed.js';
+import { getJwtSecret } from './utils/generateToken.js';
 
 // Route imports
 import authRoutes from './routes/authRoutes.js';
@@ -28,34 +29,59 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Robust CORS configuration supporting localhost, 127.0.0.1, and configured CLIENT_URL
-const allowedOrigins = [
-  process.env.CLIENT_URL,
+// Narrowest safe proxy trust setting for reverse proxy hosting (Render)
+// Trusts the 1st reverse proxy hop so req.ip correctly resolves the client IP for rate limiting
+app.set('trust proxy', 1);
+
+// Helper to parse and normalize configured production frontend URLs from CLIENT_URL
+// Supports comma-separated origins and strips trailing slashes for exact origin matching
+export const getProductionAllowedOrigins = () => {
+  const envOrigins = process.env.CLIENT_URL || '';
+  return envOrigins
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/+$/, ''))
+    .filter(Boolean);
+};
+
+const devOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:5174',
   'http://127.0.0.1:5174',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-].filter(Boolean);
+];
+
+export const isOriginAllowed = (origin) => {
+  // Allow requests with no origin header (mobile apps, curl, server-to-server health checks)
+  if (!origin) return true;
+
+  const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+  const prodOrigins = getProductionAllowedOrigins();
+
+  if (process.env.NODE_ENV === 'production') {
+    // In production, strictly match explicitly configured origins in CLIENT_URL
+    // Wildcards and untrusted preview domains are strictly disallowed
+    return prodOrigins.includes(normalizedOrigin);
+  }
+
+  // In development, allow configured origins, local development ports, and LAN IPs
+  if (prodOrigins.includes(normalizedOrigin) || devOrigins.includes(normalizedOrigin)) {
+    return true;
+  }
+
+  return /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(
+    normalizedOrigin
+  );
+};
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      if (
-        allowedOrigins.includes(origin) ||
-        /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$/.test(origin)
-      ) {
+      if (isOriginAllowed(origin)) {
         return callback(null, true);
       }
-
-      if (process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
-      }
-
-      callback(new Error('CORS policy: Not allowed by CORS'));
+      return callback(new Error(`CORS policy: Origin ${origin} is not allowed by CORS.`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -118,8 +144,18 @@ app.use(errorHandler);
 // Start Server after connecting to Database
 const startServer = async () => {
   try {
+    // Fail-fast environment validation for production
+    getJwtSecret();
+
     await connectDB();
-    await autoSeedIfEmpty();
+
+    // Auto-seed demo data in development, or in production only if explicitly requested
+    if (process.env.NODE_ENV !== 'production' || process.env.AUTO_SEED === 'true') {
+      await autoSeedIfEmpty();
+    } else {
+      console.log('ℹ️ Skipping auto-seeding in production mode (set AUTO_SEED=true to seed initial demo data).');
+    }
+
     app.listen(PORT, () => {
       console.log(`🚀 Campus Connect Server running on http://localhost:${PORT}`);
     });
@@ -129,6 +165,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (process.argv[1] && process.argv[1].endsWith('server.js')) {
+  startServer();
+}
 
 export default app;

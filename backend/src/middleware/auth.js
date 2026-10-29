@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { getJwtSecret } from '../utils/generateToken.js';
 
 // Protect routes - verify JWT and attach authenticated user to req.user
 export const protect = async (req, res, next) => {
@@ -13,7 +14,7 @@ export const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || 'campus_connect_super_secret_jwt_key_2026'
+        getJwtSecret()
       );
 
       req.user = await User.findById(decoded.id).select('-passwordHash');

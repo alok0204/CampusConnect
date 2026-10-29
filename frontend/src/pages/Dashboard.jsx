@@ -600,9 +600,9 @@ export const Dashboard = () => {
                     className="p-2.5 rounded-xl border border-emerald-100/70 dark:border-[#262626] hover:border-emerald-300 dark:hover:border-emerald-700 bg-emerald-50/20 dark:bg-emerald-950/10 flex items-center gap-3 group transition-all"
                   >
                     <div className="w-9 h-9 rounded-lg bg-emerald-100/40 dark:bg-[#212121] overflow-hidden shrink-0 border border-emerald-200/60 dark:border-[#2e2e2e]">
-                      {item.images && item.images.length > 0 ? (
+                      {item.image ? (
                         <img
-                          src={getImageUrl(item.images[0])}
+                          src={getImageUrl(item.image)}
                           alt={item.title}
                           className="w-full h-full object-cover"
                         />

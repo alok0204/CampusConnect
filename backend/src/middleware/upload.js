@@ -7,28 +7,20 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Base uploads directory
+// Base uploads directory (used for local development fallback and static serving)
 const uploadsBaseDir = path.join(__dirname, '../../uploads');
-const imagesDir = path.join(uploadsBaseDir, 'images');
+export const imagesDir = path.join(uploadsBaseDir, 'images');
 
-// Ensure upload directories exist
+// Ensure upload directories exist for local development
 [uploadsBaseDir, imagesDir].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 });
 
-// Image storage configuration
-const imageStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, imagesDir);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(6).toString('hex')}`;
-    cb(null, `img-${uniqueSuffix}${ext}`);
-  },
-});
+// Use in-memory buffer storage so images can be streamed to Cloudinary in production
+// without leaving temporary disk artifacts, while still allowing local save in dev
+const imageStorage = multer.memoryStorage();
 
 // Image file filter (JPG, JPEG, PNG, WebP)
 const imageFileFilter = (req, file, cb) => {

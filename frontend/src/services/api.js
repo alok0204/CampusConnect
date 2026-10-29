@@ -1,7 +1,23 @@
 import axios from 'axios';
 
+/**
+ * Resolves the base API URL:
+ * - In production: uses import.meta.env.VITE_API_URL.
+ *   Automatically normalizes trailing slashes and ensures the `/api` prefix is present without duplication,
+ *   preventing broken routes or accidental `/api/api` paths.
+ * - In local development: defaults to '/api' which cleanly routes through the local Vite dev proxy.
+ */
+export const resolveBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (!envUrl || !envUrl.trim()) {
+    return '/api';
+  }
+  const cleanUrl = envUrl.trim().replace(/\/+$/, '');
+  return cleanUrl.endsWith('/api') ? cleanUrl : `${cleanUrl}/api`;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: resolveBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
