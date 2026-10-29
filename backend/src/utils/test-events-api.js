@@ -115,6 +115,32 @@ const runEventTests = async () => {
     }
     console.log('✅ RBAC enforced: Student access to /api/events/admin/all was blocked (403 Forbidden).');
 
+    // 7b. Security: Student attempting unauthorized event approval must fail with 403 Forbidden
+    console.log('\n7b. Testing RBAC Security: Student calling Event Approve endpoint...');
+    const studentApproveRes = await fetch(`${BASE_URL}/events/${createdEventId}/approve`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${studentCSE.token}` },
+    });
+    if (studentApproveRes.status !== 403) {
+      throw new Error(`❌ Expected 403 Forbidden for unauthorized approval attempt, got ${studentApproveRes.status}`);
+    }
+    console.log('✅ RBAC enforced: Unauthorized event approval blocked (403 Forbidden).');
+
+    // 7c. Security: Student attempting unauthorized event rejection must fail with 403 Forbidden
+    console.log('\n7c. Testing RBAC Security: Student calling Event Reject endpoint...');
+    const studentRejectRes = await fetch(`${BASE_URL}/events/${createdEventId}/reject`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${studentCSE.token}`,
+      },
+      body: JSON.stringify({ rejectionReason: 'Malicious attempt' }),
+    });
+    if (studentRejectRes.status !== 403) {
+      throw new Error(`❌ Expected 403 Forbidden for unauthorized rejection attempt, got ${studentRejectRes.status}`);
+    }
+    console.log('✅ RBAC enforced: Unauthorized event rejection blocked (403 Forbidden).');
+
     // 8. Admin reviews pending events
     console.log('\n8. Testing Admin Event Approvals Dashboard...');
     const adminEventsRes = await fetch(`${BASE_URL}/events/admin/all?status=pending`, {

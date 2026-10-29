@@ -26,6 +26,14 @@ export const registerStudent = async (req, res, next) => {
       });
     }
 
+    // Security: Reject any attempt to self-assign administrative or unauthorized roles
+    if (req.body.role && req.body.role.trim().toUpperCase() !== 'STUDENT') {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized role assignment. Public registration cannot assign administrative roles.',
+      });
+    }
+
     if (password !== confirmPassword) {
       return res.status(400).json({
         success: false,
@@ -123,6 +131,14 @@ export const registerFaculty = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields: name, official email, faculty ID, department, password',
+      });
+    }
+
+    // Security: Reject any attempt to self-assign administrative or unauthorized roles
+    if (req.body.role && req.body.role.trim().toUpperCase() !== 'FACULTY') {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized role assignment. Public registration cannot assign administrative roles.',
       });
     }
 
