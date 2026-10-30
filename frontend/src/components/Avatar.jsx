@@ -9,6 +9,7 @@ const sizeMap = {
   lg: 'w-12 h-12 text-base',
   xl: 'w-16 h-16 text-xl',
   '2xl': 'w-24 h-24 sm:w-28 sm:h-28 text-3xl font-extrabold',
+  '3xl': 'w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 text-4xl font-extrabold',
 };
 
 /**
